@@ -4,7 +4,10 @@ ActionView::Helpers::FormBuilder.class_eval do
     raise ArgumentError, 'Missing block to nested_fields_for' unless block_given?
 
     options[:new_item_index] ||= 'new_nested_item'
-    options[:new_object] ||= self.object.send(association).build
+    unless options[:new_object]
+      options[:new_object] = self.object.send(association).build
+      self.object.send(association).destroy(options[:new_object])
+    end
     options[:item_template_class] ||= ['template', 'item', association.to_s.singularize].join(' ')
     options[:empty_template_class] ||= ['template', 'empty', association.to_s.singularize].join(' ')
     options[:show_empty] ||= false
